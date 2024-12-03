@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.10/purify.min.js"></script>
+</head>
+<body>
+  <h1>Login</h1>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Usuário" required />
+    <input type="password" id="password" placeholder="Senha" required />
+    <button type="submit">Entrar</button>
+  </form>
+  <script>
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: DOMPurify.sanitize(username), password: DOMPurify.sanitize(password) }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert('Login bem-sucedido! Seu token: ' + DOMPurify.sanitize(data.token));
+          localStorage.setItem('token', DOMPurify.sanitize(data.token));
+        } else {
+          alert('Login inválido!');
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+      }
+    });
+  </script>
+</body>
+</html>
